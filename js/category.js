@@ -6,7 +6,7 @@
     // ===== PROTECTION =====
     // Block right-click
     document.addEventListener('contextmenu', function (e) {
-        if (e.target.closest('video, img, .video-card')) {
+        if (e.target.closest('video, img')) {
             e.preventDefault();
             showToast('Защита контента | Копирование запрещено');
         }
@@ -15,10 +15,9 @@
     // Block keyboard shortcuts for saving/source
     document.addEventListener('keydown', function (e) {
         if (!e.ctrlKey) return;
-        const keys = ['s', 'u', 'c', 'p', 'd'];
+        const keys = ['s', 'u', 'p', 'd'];
         if (keys.includes(e.key.toLowerCase())) {
             e.preventDefault();
-            if (e.key.toLowerCase() === 'c') return;
             showToast('Защита контента | Действие заблокировано');
         }
     });
@@ -26,12 +25,6 @@
     // Block drag & drop
     document.addEventListener('dragstart', function (e) {
         if (e.target.closest('video, img')) e.preventDefault();
-    });
-
-    // Device orientation protection
-    const ACCEPTED_ORIENTATIONS = null;
-    window.addEventListener('deviceorientation', function () {
-        // Rotation-based protection (mobile screenshot defense)
     });
 
     // ===== TOAST =====
@@ -53,39 +46,42 @@
             }, 2500);
         }, 10);
     }
-
     window.showToast = showToast;
 
     // ===== CATEGORY CONFIG =====
-    // This data is defined in the HTML page and injected here
-    const config = window.CATEGORY_CONFIG || { title: 'Категория', description: '', icon: 'fa-folder', videos: [] };
+    // Defined in the HTML page as window.CATEGORY_CONFIG
+    let config = window.CATEGORY_CONFIG || { title: 'Категория', description: '', icon: 'fa-folder', videos: [] };
+
+    if (typeof config.videos === 'undefined') config.videos = [];
 
     // ===== POPULATE CATEGORY =====
     function populateCategory() {
-        // Set category info
-        document.getElementById('categoryTitle').textContent = config.title;
-        document.getElementById('categoryDescription').textContent = config.description || 'Контент категории';
-        document.getElementById('navCategoryName').textContent = config.title;
-        document.getElementById('categoryIcon').innerHTML = `<i class="fas ${config.icon}"></i>`;
-
-        // Document title
-        document.title = `SlivArchive — ${config.title}`;
-
-        // Render videos
+        try {
+            document.getElementById('categoryTitle').textContent = config.title;
+            const desc = document.getElementById('categoryDescription');
+            if (desc) desc.textContent = config.description || 'Контент категории';
+            const navName = document.getElementById('navCategoryName');
+            if (navName) navName.textContent = config.title;
+            const iconBox = document.getElementById('categoryIcon');
+            if (iconBox) iconBox.innerHTML = `<i class="fas ${config.icon || 'fa-folder'}"></i>`;
+            document.title = `SlivArchive — ${config.title}`;
+        } catch (err) {
+            console.error('populateCategory error:', err);
+        }
         renderVideos();
     }
 
-    // ===== RENDER VIDEOS =====
+    // ===== RENDER VIDEOS (inline player) =====
     function renderVideos() {
         const grid = document.getElementById('videosGrid');
         const noVideos = document.getElementById('noVideos');
         const badge = document.getElementById('videoCountBadge');
 
-        badge.textContent = `${config.videos.length} видео`;
+        if (badge) badge.textContent = `${config.videos.length} видео`;
 
-        if (!config.videos || config.videos.length === 0) {
+        if (config.videos.length === 0) {
             grid.style.display = 'none';
-            noVideos.style.display = 'block';
+            noVideos.style.display = 'flex';
             return;
         }
 
@@ -93,99 +89,64 @@
         noVideos.style.display = 'none';
 
         grid.innerHTML = config.videos.map((video, index) => `
-            <div class="video-card" data-index="${index}" id="videoCard-${index}" style="animation-delay: ${index * 0.1}s">
-                <div class="video-thumb">
-                    <div class="video-play-badge"><i class="fas fa-play"></i></div>
-                    <div class="video-thumb-icon"><i class="fas fa-film"></i></div>
-                    <div class="protection-banner"><i class="fas fa-lock"></i> Защищено</div>
+            <div class="video-card" data-index="${index}" style="animation-delay: ${index * 0.1}s">
+                <div class="video-player-wrap-inline">
+                    <video
+                        controls
+                        playsinline
+                        preload="metadata"
+                        controlslist="nodownload noplaybackrate noremoteplayback"
+                        disablepictureinpicture
+                        data-title="${(video.title || '').replace(/"/g, '&quot;')}"
+                    >
+                        <source src="${video.src}" type="video/mp4">
+                    </video>
+                    <div class="video-watermark-inline">${config.title.toUpperCase()}</div>
                 </div>
                 <div class="video-card-info">
                     <div class="video-card-title">${video.title}</div>
                     <div class="video-card-meta">
                         <span><i class="fas fa-calendar"></i> ${video.date || '—'}</span>
-                        <span><i class="fas fa-shield-halved"></i> Приватно</span>
-                    </div>
-                    <div class="video-card-open">
-                        <span>Смотреть <i class="fas fa-arrow-up-right"></i></span>
+                        <span><i class="fas fa-shield-halved"></i> Защищено</span>
                     </div>
                 </div>
             </div>
         `).join('');
 
-        // 3D hover effect
-        grid.querySelectorAll('.video-card').forEach(card => {
-            card.addEventListener('mousemove', function (e) {
-                const rect = this.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const y = e.clientY - rect.top;
-                const centerX = rect.width / 2;
-                const centerY = rect.height / 2;
-                const rotateY = (x - centerX) / centerX * 6;
-                const rotateX = -(y - centerY) / centerY * 6;
-                this.style.transform = `translateY(-8px) rotateY(${rotateY}deg) rotateX(${rotateX}deg)`;
-            });
-            card.addEventListener('mouseleave', function () {
-                this.style.transform = '';
-            });
-            card.addEventListener('click', function () {
-                openVideo(parseInt(this.dataset.index));
+        // Protection for each inline player
+        grid.querySelectorAll('video').forEach(player => {
+            player.addEventListener('contextmenu', e => e.preventDefault());
+            player.addEventListener('dragstart', e => e.preventDefault());
+            player.addEventListener('play', () => {
+                // Pause all others when one starts
+                grid.querySelectorAll('video').forEach(other => {
+                    if (other !== player && !other.paused) other.pause();
+                });
+                showVideoWatermark(player);
             });
         });
     }
 
-    // ===== OPEN VIDEO =====
-    function openVideo(index) {
-        const video = config.videos[index];
-        if (!video) return;
-
-        const modal = document.getElementById('videoModal');
-        const player = document.getElementById('videoPlayer');
-        const title = document.getElementById('videoModalTitle');
-        const watermark = document.getElementById('videoWatermark');
-
-        // Watermark with title
-        watermark.textContent = config.title.toUpperCase();
-
-        title.textContent = video.title;
-        player.src = video.src;
-        player.poster = video.poster || '';
-
-        modal.style.display = 'flex';
-        document.body.style.overflow = 'hidden';
-
-        // Autoplay attempt
-        player.play().catch(() => {});
-
-        // Video protection events
-        if (player.dataset.protected !== 'true') {
-            player.dataset.protected = 'true';
-            player.addEventListener('contextmenu', e => e.preventDefault());
-            player.addEventListener('dragstart', e => e.preventDefault());
-        }
-    }
-
-    // ===== CLOSE VIDEO =====
-    function closeVideo() {
-        const modal = document.getElementById('videoModal');
-        const player = document.getElementById('videoPlayer');
-        player.pause();
-        player.removeAttribute('src');
-        player.load();
-        modal.style.display = 'none';
-        document.body.style.overflow = '';
+    // ===== WATERMARK FADE =====
+    function showVideoWatermark(video) {
+        const wrap = video.closest('.video-player-wrap-inline');
+        if (!wrap) return;
+        const wm = wrap.querySelector('.video-watermark-inline');
+        if (!wm) return;
+        wm.classList.remove('on');
+        requestAnimationFrame(() => wm.classList.add('on'));
+        clearTimeout(wm._t);
+        wm._t = setTimeout(() => wm.classList.remove('on'), 1800);
     }
 
     // ===== IFRAME EMBED BLOCKER =====
-    // Prevents site from being embedded in iframes
     if (window.top !== window.self) {
         window.top.location = window.location;
     }
 
     // ===== DOM PROTECTION =====
-    const observer = new MutationObserver(function (mutations) {
-        // Re-apply protections dynamically
-        const videos = document.querySelectorAll('video');
-        videos.forEach(v => {
+    const observer = new MutationObserver(function () {
+        document.querySelectorAll('video').forEach(v => {
             if (!v.hasAttribute('controlslist')) {
                 v.setAttribute('controlslist', 'nodownload noplaybackrate noremoteplayback');
             }
@@ -196,12 +157,8 @@
     // ===== INIT =====
     document.addEventListener('DOMContentLoaded', function () {
         populateCategory();
-        document.getElementById('closeVideoModal').addEventListener('click', closeVideo);
-        document.addEventListener('keydown', function (e) {
-            if (e.key === 'Escape') closeVideo();
-        });
-        document.getElementById('videoModal').addEventListener('click', function (e) {
-            if (e.target === this) closeVideo();
-        });
     });
+
+    // Expose for debugging / reuse
+    window.SlivArchiveCategory = { config, renderVideos };
 })();

@@ -77,28 +77,9 @@
         </footer>
     </div>
 
-    <!-- VIDEO PLAYER MODAL -->
-    <div id="videoModal" class="video-modal" style="display:none;">
-        <div class="video-modal-content">
-            <button class="video-modal-close" id="closeVideoModal">
-                <i class="fas fa-times"></i>
-            </button>
-            <div class="video-player-wrap">
-                <video id="videoPlayer" controls playsinline preload="metadata"></video>
-                <div class="video-watermark" id="videoWatermark">ПАНТЕРА КАЗАНЬ</div>
-            </div>
-            <div class="video-modal-info">
-                <h3 id="videoModalTitle"></h3>
-                <div class="video-modal-meta">
-                    <span><i class="fas fa-shield-halved"></i> Защищено</span>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <script>
         // ===== CATEGORY CONFIG =====
-        const CATEGORY_CONFIG = {
+        window.CATEGORY_CONFIG = {
             title: 'Пантера Казань',
             description: 'Эксклюзивный контент из Казани',
             icon: 'fa-cat',
