@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SlivArchive</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+
+    <!-- AGE VERIFICATION MODAL -->
+    <div id="ageModal" class="modal-overlay">
+        <div class="modal-card age-card">
+            <div class="modal-icon warning-icon">
+                <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <h1>SlivArchive</h1>
+            <div class="age-badge">18+</div>
+            <p class="modal-text">Данный сайт содержит контент, предназначенный <strong>исключительно для лиц старше 18 лет</strong>.</p>
+            <p class="modal-subtext">Входя на сайт, вы подтверждаете, что вам исполнилось 18 лет и вы не являетесь несовершеннолетним.</p>
+            <div class="modal-buttons">
+                <button class="btn btn-danger" id="ageReject">Мне нет 18 лет</button>
+                <button class="btn btn-primary" id="ageAccept">Мне есть 18 лет</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- AGREEMENT MODAL -->
+    <div id="agreementModal" class="modal-overlay" style="display:none;">
+        <div class="modal-card agreement-card">
+            <div class="modal-icon agreement-icon">
+                <i class="fas fa-file-contract"></i>
+            </div>
+            <h1>Пользовательское соглашение</h1>
+            <div class="agreement-content">
+                <p>Используя сайт <strong>SlivArchive</strong>, вы соглашаетесь со следующими условиями:</p>
+                <ul>
+                    <li><i class="fas fa-shield-halved"></i> Все размещённые материалы предоставлены исключительно в ознакомительных целях.</li>
+                    <li><i class="fas fa-ban"></i> Администрация сайта <strong>не несёт ответственности</strong> за дальнейшее распространение контента третьим лицам.</li>
+                    <li><i class="fas fa-user-shield"></i> Вы несёте полную ответственность за любые действия, совершённые с контентом, полученным на данном сайте.</li>
+                    <li><i class="fas fa-gavel"></i> Распространение, перепубликация или коммерческое использование материалов без согласия правообладателей запрещено.</li>
+                    <li><i class="fas fa-lock"></i> Запрещено копировать, скачивать и распространять контент с данного сайта.</li>
+                    <li><i class="fas fa-times-circle"></i> Администрация оставляет за собой право закрыть доступ любому пользователю без объяснения причин.</li>
+                </ul>
+            </div>
+            <div class="checkbox-wrapper">
+                <label class="custom-checkbox">
+                    <input type="checkbox" id="agreeCheck">
+                    <span class="checkmark"></span>
+                    <span>Я прочитал и принимаю пользовательское соглашение</span>
+                </label>
+            </div>
+            <div class="modal-buttons">
+                <button class="btn btn-danger" id="agreeReject">Отклонить</button>
+                <button class="btn btn-primary" id="agreeAccept" disabled>Принять и войти</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- BLOCKED PAGE -->
+    <div id="blockedPage" class="modal-overlay" style="display:none;">
+        <div class="modal-card blocked-card">
+            <div class="modal-icon blocked-icon">
+                <i class="fas fa-ban"></i>
+            </div>
+            <h1>Доступ запрещён</h1>
+            <p class="modal-text">Вы не можете продолжить использование данного сайта.</p>
+            <button class="btn btn-secondary" onclick="location.reload()">Вернуться</button>
+        </div>
+    </div>
+
+    <!-- MAIN SITE -->
+    <div id="mainSite" class="hidden">
+        <!-- HEADER -->
+        <header class="header">
+            <div class="header-inner">
+                <div class="logo">
+                    <div class="logo-3d">
+                        <span class="logo-icon"><i class="fas fa-database"></i></span>
+                        <span class="logo-text">Sliv<span class="accent">Archive</span></span>
+                    </div>
+                </div>
+                <nav class="nav">
+                    <a href="#" class="nav-link active"><i class="fas fa-home"></i> Главная</a>
+                    <a href="#" class="nav-link"><i class="fas fa-fire"></i> Популярное</a>
+                    <a href="#" class="nav-link"><i class="fas fa-clock"></i> Новое</a>
+                    <a href="#" class="nav-link" id="agreementLink"><i class="fas fa-file-contract"></i> Соглашение</a>
+                </nav>
+                <div class="header-actions">
+                    <div class="search-bar">
+                        <i class="fas fa-search"></i>
+                        <input type="text" placeholder="Поиск категорий..." id="searchInput">
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- HERO -->
+        <section class="hero">
+            <div class="hero-bg">
+                <div class="hero-particles" id="particles"></div>
+            </div>
+            <div class="hero-content">
+                <h1 class="hero-title">
+                    <span class="line">Архив</span>
+                    <span class="line accent-line">контента</span>
+                </h1>
+                <p class="hero-desc">Большая коллекция контента, organized по категориям. Быстрый доступ. Анонимность.</p>
+                <div class="hero-stats">
+                    <div class="stat">
+                        <span class="stat-num" id="categoryCount">0</span>
+                        <span class="stat-label">Категорий</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-num" id="videoCount">0</span>
+                        <span class="stat-label">Видео</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-num">24/7</span>
+                        <span class="stat-label">Доступ</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CATEGORIES GRID -->
+        <section class="categories-section" id="categoriesSection">
+            <div class="section-header">
+                <h2><i class="fas fa-grid-2"></i> Категории</h2>
+                <div class="filter-buttons">
+                    <button class="filter-btn active" data-filter="all">Все</button>
+                </div>
+            </div>
+            <div class="categories-grid" id="categoriesGrid">
+                <!-- Categories will be injected here -->
+            </div>
+            <div class="no-results" id="noResults" style="display:none;">
+                <i class="fas fa-search"></i>
+                <p>Категории не найдены</p>
+            </div>
+        </section>
+
+        <!-- FOOTER -->
+        <footer class="footer">
+            <div class="footer-inner">
+                <div class="footer-logo">
+                    <span class="logo-text">Sliv<span class="accent">Archive</span></span>
+                    <p>Конфиденциально. Быстро. Надёжно.</p>
+                </div>
+                <div class="footer-info">
+                    <p><i class="fas fa-exclamation-triangle"></i> Все материалы размещены исключительно для ознакомительных целей.</p>
+                    <p><i class="fas fa-shield-halved"></i> Администрация не несёт ответственности за распространение контента.</p>
+                    <p class="footer-copy">&copy; 2026 SlivArchive. Все права защищены.</p>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script src="js/main.js"></script>
+</body>
+</html>

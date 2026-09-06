@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SlivArchive — Подъезд Воронеж</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/category.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+
+    <div id="mainSite">
+        <!-- HEADER -->
+        <header class="header">
+            <div class="header-inner">
+                <div class="logo">
+                    <div class="logo-3d">
+                        <span class="logo-icon"><i class="fas fa-database"></i></span>
+                        <span class="logo-text">Sliv<span class="accent">Archive</span></span>
+                    </div>
+                </div>
+                <nav class="nav">
+                    <a href="../index.html" class="nav-link"><i class="fas fa-home"></i> Главная</a>
+                    <a href="#" class="nav-link active"><i class="fas fa-folder-open"></i> Подъезд Воронеж</a>
+                </nav>
+            </div>
+        </header>
+
+        <!-- CATEGORY HEADER -->
+        <div class="category-header">
+            <div class="category-header-bg"></div>
+            <div class="category-header-content">
+                <button class="btn-back" onclick="history.back()">
+                    <i class="fas fa-arrow-left"></i> Назад
+                </button>
+                <div class="category-title-block">
+                    <div class="category-icon">
+                        <i class="fas fa-building"></i>
+                    </div>
+                    <div>
+                        <h1>Подъезд Воронеж</h1>
+                        <p>Эксклюзивный контент из Воронежа</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- VIDEO GRID -->
+        <section class="video-section">
+            <div class="section-header">
+                <h2><i class="fas fa-video"></i> Видео-контент</h2>
+                <span class="video-count-badge" id="videoCountBadge">1 видео</span>
+            </div>
+
+            <div class="videos-grid" id="videosGrid"></div>
+
+            <div class="no-results" id="noVideos">
+                <i class="fas fa-inbox"></i>
+                <p>Видео пока не добавлены</p>
+            </div>
+        </section>
+
+        <!-- FOOTER -->
+        <footer class="footer">
+            <div class="footer-inner">
+                <div class="footer-logo">
+                    <span class="logo-text">Sliv<span class="accent">Archive</span></span>
+                    <p>Конфиденциально. Быстро. Надёжно.</p>
+                </div>
+                <div class="footer-info">
+                    <p><i class="fas fa-exclamation-triangle"></i> Запрещено распространять контент сайта.</p>
+                    <p><i class="fas fa-shield-halved"></i> Администрация не несёт ответственности за использование материалов.</p>
+                    <p class="footer-copy">&copy; 2026 SlivArchive. Все права защищены.</p>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- VIDEO PLAYER MODAL -->
+    <div id="videoModal" class="video-modal" style="display:none;">
+        <div class="video-modal-content">
+            <button class="video-modal-close" id="closeVideoModal">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="video-player-wrap">
+                <video id="videoPlayer" controls playsinline preload="metadata"></video>
+                <div class="video-watermark" id="videoWatermark">ПОДЪЕЗД ВОРОНЕЖ</div>
+            </div>
+            <div class="video-modal-info">
+                <h3 id="videoModalTitle"></h3>
+                <div class="video-modal-meta">
+                    <span><i class="fas fa-shield-halved"></i> Защищено</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ===== CATEGORY CONFIG =====
+        const CATEGORY_CONFIG = {
+            title: 'Подъезд Воронеж',
+            description: 'Эксклюзивный контент из Воронежа',
+            icon: 'fa-building',
+            videos: [
+                {
+                    id: 'voronezh-1',
+                    title: 'Подъезд Воронеж — Видео 1',
+                    src: '../videos/voronezh/voronezh.mp4',
+                    date: '06.09.2026'
+                }
+            ]
+        };
+    </script>
+    <script src="../js/category.js"></script>
+</body>
+</html>
